@@ -311,17 +311,18 @@ npm run lint
 
 ### Akun Guru
 
-| Email | Password |
+| Field | Nilai |
 |-------|-------|
-| teacher@test.com | password123 |
-| student@test.com | password123 |
+| Email | teacher@test.com |
+| Password | password123 |
+
 
 ### Akun Mahasiswa
 
 | Field | Nilai |
 |-------|-------|
-| Email | mahasiswa@universitas.edu |
-| Password | ******** |
+| Email | student@test.com |
+| Password | password123 |
 
 ---
 
