@@ -1,443 +1,446 @@
 # ExamGuard
 
-> AI-Based Online Examination Integrity Monitoring System
+> Sistem Pemantauan Integritas Ujian Online Berbasis AI
 
 ![Next.js](https://img.shields.io/badge/Next.js-16.2-black)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)
 ![Supabase](https://img.shields.io/badge/Supabase-Realtime-green)
-![License](https://img.shields.io/badge/License-Academic-red)
+![License](https://img.shields.io/badge/License-Akademik-red)
 
 ---
 
-## 1. Project Description
+## 1. Deskripsi Proyek
 
-ExamGuard is an AI-powered online examination integrity monitoring system designed to ensure fair assessments in educational environments. The platform provides real-time surveillance capabilities that detect and document potential cheating behaviors during exam sessions.
+ExamGuard merupakan sistem pemantauan integritas ujian online yang didukung oleh kecerdasan buatan. Sistem ini dirancang untuk memastikan keadilan dalam proses penilaian di lingkungan pendidikan. Platform ini menyediakan kemampuan pemantauan secara realtime yang dapat mendeteksi dan mendokumentasikan perilaku mencurigakan selama sesi ujian berlangsung.
 
-### Purpose
+### Tujuan Proyek
 
-- Maintain academic integrity during online examinations
-- Provide teachers with real-time visibility into student activities
-- Create a secure, distraction-free exam environment
-- Generate comprehensive violation reports for review
+- Menjaga integritas akademik dalam pelaksanaan ujian online
+- Memberikan keterbacaan kepada guru terhadap aktivitas mahasiswa
+- Menciptakan lingkungan ujian yang aman dan bebas gangguan
+- Menghasilkan laporan pelanggaran yang komprehensif untuk ditinjau
 
-### Problem Solved
+### Permasalahan yang Diatasi
 
-Traditional online exams lack effective monitoring mechanisms. Students can easily switch tabs, copy content, or navigate away from the exam window. ExamGuard addresses these vulnerabilities by implementing multi-layered detection systems that track suspicious activities and provide teachers with actionable insights.
+Ujian online tradisional memiliki keterbatasan dalam mekanisme pemantauan. Mahasiswa dengan mudah dapat berpindah tab, menyalin konten, atau keluar dari jendela ujian. ExamGuard mengatasi kelemahan ini dengan menerapkan sistem deteksi berlapis yang melacak aktivitas mencurigakan dan memberikan informasi yang dapat ditindaklanjuti kepada guru.
 
-### Main Features
+### Fitur Utama
 
-- **Real-time Monitoring**: Live tracking of student exam sessions
-- **Integrity Agent**: Client-side detection of suspicious behaviors
-- **Risk Analysis**: Automated scoring of student activities
-- **Violation Timeline**: Chronological documentation of all detected events
-- **Role-based Dashboards**: Separate interfaces for students and teachers
-- **Responsive Design**: Full functionality across desktop, tablet, and mobile devices
+- **Pemantauan Realtime**: Pelacakan langsung sesi ujian mahasiswa
+- **Integrity Agent**: Deteksi berbasis client-side untuk perilaku mencurigakan
+- **Analisis Risiko**: Pemberian skor otomatis terhadap aktivitas mahasiswa
+- **Lini Waktu Pelanggaran**: Dokumentasi kronologis seluruh kejadian yang terdeteksi
+- **Dashboard Berbasis Peran**: Antarmuka terpisah untuk mahasiswa dan guru
+- **Desain Responsif**: Fungsi lengkap di berbagai ukuran layar
 
 ---
 
-## 2. Architecture
+## 2. Arsitektur Sistem
 
 ```
 exam-integrity-agent/
-├── app/                          # Next.js App Router pages
-│   ├── auth/                     # Authentication routes
-│   ├── dashboard-guru/          # Teacher dashboard (Indonesian)
-│   ├── dashboard-mahasiswa/     # Student dashboard (Indonesian)
+├── app/                          # Halaman Next.js App Router
+│   ├── auth/                     # Rute autentikasi
+│   ├── dashboard-guru/          # Dashboard guru
+│   ├── dashboard-mahasiswa/     # Dashboard mahasiswa
 │   │   └── exam/
-│   │       └── [id]/            # Dynamic exam session page
-│   ├── login/                   # Login page
-│   ├── profile/                 # User profile management
-│   ├── settings/                # Application settings
-│   ├── signup/                  # Registration page
-│   ├── globals.css              # Global styles
-│   ├── layout.tsx              # Root layout
-│   └── page.tsx                 # Landing page
-├── components/                   # React components
-│   ├── auth/                    # Authentication components
-│   ├── exam/                    # Exam-related components
-│   ├── navbar.tsx              # Navigation component
-│   ├── student/                # Student-specific components
-│   │   ├── exam-workspace.tsx  # Exam-taking interface
+│   │       └── [id]/            # Halaman sesi ujian dinamis
+│   ├── login/                   # Halaman login
+│   ├── profile/                 # Manajemen profil pengguna
+│   ├── settings/                # Pengaturan aplikasi
+│   ├── signup/                  # Halaman pendaftaran
+│   ├── globals.css              # Stylesheet global
+│   ├── layout.tsx              # Layout utama
+│   └── page.tsx                 # Halaman beranda
+├── components/                   # Komponen React
+│   ├── auth/                    # Komponen autentikasi
+│   ├── exam/                    # Komponen terkait ujian
+│   ├── navbar.tsx              # Komponen navigasi
+│   ├── student/                # Komponen khusus mahasiswa
+│   │   ├── exam-workspace.tsx  # Antarmuka mengerjakan ujian
 │   │   └── student-dashboard-content.tsx
-│   ├── teacher/                 # Teacher-specific components
+│   ├── teacher/                 # Komponen khusus guru
 │   │   ├── teacher-dashboard.tsx
-│   │   ├── student-card.tsx    # Individual student monitoring card
-│   │   ├── kpi-card.tsx        # Key performance indicators
+│   │   ├── student-card.tsx    # Kartu pemantauan mahasiswa
+│   │   ├── kpi-card.tsx        # Indikator kinerja utama
 │   │   ├── live-activity-bar.tsx
 │   │   └── question-heatmap.tsx
-│   └── ui/                     # Reusable UI components
+│   └── ui/                     # Komponen UI yang dapat digunakan ulang
 │       ├── scientific-background.tsx
 │       ├── security-alert.tsx
 │       └── toast.tsx
 ├── hooks/                       # Custom React hooks
-│   └── use-integrity-agent.ts  # Core integrity monitoring hook
-├── lib/                         # Utility libraries
-│   ├── supabase/               # Supabase client configuration
-│   │   ├── client.ts           # Browser client
-│   │   └── server.ts           # Server client
-│   ├── utils.ts                # General utilities
+│   └── use-integrity-agent.ts  # Hook pemantauan integritas utama
+├── lib/                         # Library utilitas
+│   ├── supabase/               # Konfigurasi Supabase client
+│   │   ├── client.ts           # Client untuk browser
+│   │   └── server.ts           # Client untuk server
+│   ├── utils.ts                # Utilitas umum
 │   └── utils/
-│       └── date.ts             # Date formatting utilities
-├── public/                      # Static assets
-├── supabase/                   # Database configuration
-│   └── schema.sql              # Complete database schema
-├── types/                      # TypeScript type definitions
-│   └── supabase.ts             # Supabase-generated types
-├── docs/                       # Documentation
-│   └── DESIGN.md               # Design system documentation
-├── .env.example                # Environment variables template
-├── eslint.config.mjs           # ESLint configuration
-├── next.config.ts              # Next.js configuration
-├── package.json                # Dependencies
-├── postcss.config.mjs          # PostCSS configuration
-├── tailwind.config.ts          # Tailwind CSS configuration
-└── tsconfig.json               # TypeScript configuration
+│       └── date.ts             # Utilitas format tanggal
+├── public/                      # Aset statis
+├── supabase/                   # Konfigurasi database
+│   └── schema.sql              # Skema database lengkap
+├── types/                      # Definisi tipe TypeScript
+│   └── supabase.ts             # Tipe yang dihasilkan Supabase
+├── docs/                       # Dokumentasi
+│   └── DESIGN.md               # Dokumentasi sistem desain
+├── .env.example                # Template variabel lingkungan
+├── eslint.config.mjs           # Konfigurasi ESLint
+├── next.config.ts              # Konfigurasi Next.js
+├── package.json                # Daftar dependensi
+├── postcss.config.mjs          # Konfigurasi PostCSS
+├── tailwind.config.ts          # Konfigurasi Tailwind CSS
+└── tsconfig.json               # Konfigurasi TypeScript
 ```
 
 ---
 
-## 3. Tech Stack
+## 3. Teknologi yang Digunakan
 
-| Technology | Version | Purpose |
+| Teknologi | Versi | Fungsi |
 |------------|---------|---------|
-| **Next.js** | 16.2 | React framework with App Router |
-| **TypeScript** | 5 | Type-safe JavaScript |
-| **Tailwind CSS** | 4 | Utility-first styling |
-| **Supabase** | 2.108 | Backend as a service, database, auth |
-| **Framer Motion** | 12.41 | Animation library |
-| **Lucide React** | 1.21 | Icon library |
-| **clsx** | 2.1.1 | Conditional class names |
-| **tailwind-merge** | 3.6 | Tailwind class merging |
+| **Next.js** | 16.2 | Framework React dengan App Router |
+| **TypeScript** | 5 | JavaScript dengan type safety |
+| **Tailwind CSS** | 4 | Styling dengan pendekatan utility-first |
+| **Supabase** | 2.108 | Backend as a service, database, autentikasi |
+| **Framer Motion** | 12.41 | Library animasi |
+| **Lucide React** | 1.21 | Library ikon |
+| **clsx** | 2.1.1 | Class name kondisional |
+| **tailwind-merge** | 3.6 | Penggabungan class Tailwind |
 
 ---
 
-## 4. Features
+## 4. Fitur Aplikasi
 
-### Student Features
+### Mahasiswa
 
-| Feature | Description |
+| Fitur | Deskripsi |
 |---------|-------------|
-| **Login/Registration** | Secure authentication with email and password |
-| **Dashboard** | View available exams, active sessions, and completed assessments |
-| **Take Exam** | Interactive exam interface with question navigation |
-| **Auto Save** | Automatic answer persistence to prevent data loss |
-| **Submit Exam** | One-click exam submission with confirmation |
-| **View Results** | Review completed exam details and responses |
-| **Profile Management** | Update personal information |
+| **Login ke sistem** | Autentikasi aman dengan email dan password |
+| **Melihat daftar ujian** | Dashboard untuk melihat ujian tersedia, sesi aktif, dan ujian selesai |
+| **Mengikuti ujian** | Antarmuka interaktif untuk mengerjakan soal |
+| **Menjawab soal** | Pemilihan jawaban atau penulisan esai |
+| **Penyimpanan otomatis** | Jawaban disimpan secara otomatis untuk mencegah kehilangan data |
+| **Mengumpulkan ujian** | Pengumpulan dengan konfirmasi |
+| **Melihat hasil** | Peninjauan detail ujian yang telah dikerjakan |
+| **Mengubah profil** | Pembaruan informasi pribadi |
 
-### Teacher Features
+### Guru
 
-| Feature | Description |
+| Fitur | Deskripsi |
 |---------|-------------|
-| **Security Monitoring Center** | Real-time surveillance dashboard |
-| **Live Activity Feed** | Real-time alerts for exam events |
-| **Student Monitoring** | Individual student card with activity details |
-| **Violation Detection** | Automated detection and logging of suspicious behaviors |
-| **Risk Analysis** | Visual risk scoring per student |
-| **Session Filtering** | Filter by status (active, submitted, high-risk) |
-| **Search** | Quick student or exam search |
+| **Security Monitoring Center** | Dashboard pemantauan realtime |
+| **Live Activity Feed** | Pemberitahuan langsung untuk event ujian |
+| **Memantau peserta** | Kartu individu mahasiswa dengan detail aktivitas |
+| **Deteksi pelanggaran** | Pendeteksian dan pencatatan otomatis perilaku mencurigakan |
+| **Analisis risiko** | Visualisasi skor risiko per mahasiswa |
+| **Filter sesi** | Penyaringan berdasarkan status (aktif, dikumpulkan, risiko tinggi) |
+| **Pencarian** | Pencarian cepat mahasiswa atau ujian |
 
-### System Features
+### Sistem
 
-| Feature | Description |
+| Fitur | Deskripsi |
 |---------|-------------|
-| **Authentication** | Supabase Auth with role-based access (teacher/student) |
-| **Realtime Updates** | Live monitoring via Supabase Realtime |
-| **Responsive UI** | Optimized for 320px to 1920px+ screens |
-| **Role-based Routing** | Automatic redirect based on user role |
-| **Auto Profile Creation** | Automatic profile generation on signup |
+| **Autentikasi** | Supabase Auth dengan akses berbasis peran (guru/mahasiswa) |
+| **Update Realtime** | Pemantauan langsung melalui Supabase Realtime |
+| **Tampilan Responsif** | Dioptimalkan untuk layar 320px hingga 1920px+ |
+| **Routing Berbasis Peran** | Pengalihan otomatis berdasarkan peran pengguna |
+| **Pembuatan Profil Otomatis** | Pembuatan profil otomatis saat pendaftaran |
 
 ---
 
-## 5. Cheating Detection
+## 5. Sistem Deteksi Kecurangan
 
-The integrity agent (`useIntegrityAgent` hook) monitors and detects the following behaviors:
+Integrity agent (`useIntegrityAgent` hook) memantau dan mendeteksi perilaku berikut:
 
-| Detection Type | Event Type | Description |
+| Jenis Deteksi | Tipe Event | Deskripsi |
 |----------------|------------|-------------|
-| **Tab Switching** | `tab_switch` | Detects when exam window loses focus |
-| **Window Blur** | `tab_switch` | Monitors focus/blur events on window |
-| **Lost Focus** | `visibility_hidden` | Triggers when document becomes hidden |
-| **Return Duration** | `visibility_hidden` | Tracks time away from exam (threshold: 5 seconds) |
-| **Mouse Leave** | `mouse_leave` | Detects mouse leaving top of viewport |
-| **Copy/Paste** | `copy_paste` | Monitors copy, paste, and cut operations |
-| **Keyboard Shortcuts** | Prevention | Blocks Ctrl+C, Ctrl+V, Ctrl+P, F12, DevTools |
+| **Berpindah Tab** | `tab_switch` | Mendeteksi ketika jendela ujian kehilangan fokus |
+| **Jendela Tidak Aktif** | `tab_switch` | Memantau event fokus/non-fokus pada jendela |
+| **Kehilangan Fokus** | `visibility_hidden` | Berlangsung ketika dokumen menjadi tersembunyi |
+| **Durasi Kembali** | `visibility_hidden` | Mencatat waktu away dari ujian (batas: 5 detik) |
+| **Mouse Keluar** | `mouse_leave` | Mendeteksi mouse keluar dari bagian atas viewport |
+| **Salin/Tempel** | `copy_paste` | Memantau operasi salin, tempel, dan potong |
+| **Shortcut Keyboard** | Pencegahan | Memblokir Ctrl+C, Ctrl+V, Ctrl+P, F12, DevTools |
 
-### Risk Scoring
+### Pemberian Skor Risiko
 
-Each violation contributes to a student's risk score:
+Setiap pelanggaran berkontribusi terhadap skor risiko mahasiswa:
 
-| Violation Type | Risk Points |
+| Jenis Pelanggaran | Poin Risiko |
 |----------------|-------------|
-| Copy/Paste | 30 |
-| Visibility Hidden | 25 |
-| Tab Switch | 15 |
-| Mouse Leave | 10 |
+| Salin/Tempel | 30 |
+| Visibilitas Tersembunyi | 25 |
+| Berpindah Tab | 15 |
+| Mouse Keluar | 10 |
 
-Students with scores above 50 are flagged as **high-risk**.
+Mahasiswa dengan skor di atas 50 ditandai sebagai **risiko tinggi**.
 
 ---
 
-## 6. Database Schema
+## 6. Struktur Basis Data
 
-### Tables
+### Tabel
 
-| Table | Description | Key Fields |
+| Tabel | Deskripsi | Field Utama |
 |-------|-------------|------------|
-| `profiles` | User profiles and roles | id, role, name, created_at |
-| `exams` | Exam definitions | id, title, description, teacher_id, duration_minutes |
-| `questions` | Exam questions | id, exam_id, question_text, question_order, question_type, options, correct_answer |
-| `exam_sessions` | Active exam instances | id, exam_id, student_id, current_question_index, status, started_at, completed_at |
-| `student_answers` | Student responses | id, session_id, question_id, answer, answered_at |
-| `cheating_events` | Violation logs | id, session_id, event_type, question_number, duration_seconds, details |
+| `profiles` | Profil pengguna dan peran | id, role, name, created_at |
+| `exams` | Definisi ujian | id, title, description, teacher_id, duration_minutes |
+| `questions` | Soal ujian | id, exam_id, question_text, question_order, question_type, options, correct_answer |
+| `exam_sessions` | Instance ujian aktif | id, exam_id, student_id, current_question_index, status, started_at, completed_at |
+| `student_answers` | Respons mahasiswa | id, session_id, question_id, answer, answered_at |
+| `cheating_events` | Log pelanggaran | id, session_id, event_type, question_number, duration_seconds, details |
 
 ### Row Level Security
 
-All tables have RLS (Row Level Security) policies ensuring:
-- Students can only access their own data
-- Teachers can view all student data for their exams
-- Profile updates restricted to the owner
+Seluruh tabel memiliki kebijakan RLS (Row Level Security) yang memastikan:
+- Mahasiswa hanya dapat mengakses data mereka sendiri
+- Guru dapat melihat seluruh data mahasiswa untuk ujian mereka
+- Pembaruan profil dibatasi hanya untuk pemiliknya
 
 ---
 
-## 7. User Roles
+## 7. Hak Akses Pengguna
 
-| Role | Permissions |
+| Peran | Izin |
 |------|-------------|
-| **Student** | Take exams, view own results, update own profile, submit answers |
-| **Teacher** | View all exam sessions, monitor students, view violations, create exams and questions |
+| **Mahasiswa** | Mengikuti ujian, melihat hasil sendiri, mengubah profil sendiri, submisi jawaban |
+| **Guru** | Melihat seluruh sesi ujian, memantau mahasiswa, melihat pelanggaran, membuat soal ujian |
 
 ---
 
-## 8. Installation
+## 8. Cara Instalasi
 
-### Prerequisites
+### Persyaratan
 
-- Node.js 18+
-- npm or yarn
-- Supabase account (local or cloud)
+- Node.js versi 18 atau lebih baru
+- npm atau yarn
+- Akun Supabase (local atau cloud)
 
-### Steps
+### Langkah-langkah
 
 ```bash
-# Clone the repository
-git clone https://github.com/your-repo/exam-integrity-agent.git
+# Clone repository
+git clone https://github.com/your-repo/exam-integrity-agent.git](https://github.com/Dimas-evolution/exam-integrity-agent.git
 cd exam-integrity-agent
 
-# Install dependencies
+# Install dependensi
 npm install
 
-# Copy environment variables
+# Salin variabel lingkungan
 cp .env.example .env.local
 
-# Configure your Supabase credentials in .env.local
+# Konfigurasi kredensial Supabase di .env.local
+
+# Untuk alasan keamanan, kredensial Supabase tidak dipublikasikan pada repositori. Repository hanya menyertakan .env.example sebagai template konfigurasi. File .env.local digunakan secara lokal dan diserahkan kepada dosen pembimbing atau penguji melalui media terpisah apabila diperlukan untuk proses pengujian.
 ```
 
 ---
 
-## 9. Environment Variables
+## 9. Konfigurasi Environment Variables
 
-Create a `.env.local` file based on `.env.example`:
+Buat file `.env.local` berdasarkan `.env.example`:
 
 ```env
-# Supabase Configuration
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+# Konfigurasi Supabase
+NEXT_PUBLIC_SUPABASE_URL=url_project_supabase_anda
+NEXT_PUBLIC_SUPABASE_ANON_KEY=anon_key_supabase_anda
+SUPABASE_SERVICE_ROLE_KEY=service_role_key_supabase_anda
 ```
 
-### Variable Descriptions
+### Penjelasan Variabel
 
-| Variable | Description |
+| Variabel | Deskripsi |
 |----------|-------------|
-| `NEXT_PUBLIC_SUPABASE_URL` | Your Supabase project URL |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Public anon key for client-side access |
-| `SUPABASE_SERVICE_ROLE_KEY` | Server-side admin key (keep secret) |
+| `NEXT_PUBLIC_SUPABASE_URL` | URL project Supabase Anda |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Anon key publik untuk akses client-side |
+| `SUPABASE_SERVICE_ROLE_KEY` | Admin key server-side (jaga kerahasiaannya) |
 
 ---
 
-## 10. Database Setup
+## 10. Konfigurasi Database
 
-### Option 1: SQL Migration
+### Opsi 1: Migrasi SQL
 
-Run the complete schema from `supabase/schema.sql`:
+Jalankan skema lengkap dari `supabase/schema.sql`:
 
 ```sql
--- Connect to Supabase SQL Editor and execute:
+-- Hubungkan ke Supabase SQL Editor dan eksekusi:
 -- supabase/schema.sql
 ```
 
-### Option 2: Supabase CLI
+### Opsi 2: Supabase CLI
 
 ```bash
-# Link your Supabase project
+# Hubungkan project Supabase
 npx supabase link --project-ref your-project-ref
 
-# Push migrations
+# Push migrasi
 npx supabase db push
 ```
 
-The schema includes:
-- Table creation with proper constraints
-- Indexes for performance optimization
-- Row Level Security policies
-- Trigger for automatic profile creation
-- Realtime publications for monitoring
+Skema mencakup:
+- Pembuatan tabel dengan constraint yang tepat
+- Indeks untuk optimasi performa
+- Kebijakan Row Level Security
+- Trigger untuk pembuatan profil otomatis
+- Publikasi realtime untuk pemantauan
 
 ---
 
-## 11. Run Project
+## 11. Menjalankan Aplikasi
 
 ```bash
-# Development mode
+# Mode development
 npm run dev
 
-# Production build
+# Build production
 npm run build
 
-# Start production server
+# Jalankan server production
 npm start
 
-# Run linting
+# Jalankan linting
 npm run lint
 ```
 
 ---
 
-## 12. Demo Accounts
+## 12. Akun Demo
 
-### Teacher Account
+### Akun Guru
 
-| Field | Value |
+| Email | Password |
 |-------|-------|
-| Email | teacher@university.edu |
-| Password | ******** |
+| teacher@test.com | password123 |
+| student@test.com | password123 |
 
-### Student Account
+### Akun Mahasiswa
 
-| Field | Value |
+| Field | Nilai |
 |-------|-------|
-| Email | student@university.edu |
+| Email | mahasiswa@universitas.edu |
 | Password | ******** |
 
 ---
 
-## 13. Project Workflow
+## 13. Alur Sistem
 
-### Student Flow
-
-```
-1. Login → Student Dashboard
-2. View Available Exams
-3. Start Exam → Create Session
-4. Take Exam:
-   - Read Questions
-   - Select/Write Answers
-   - Navigate Between Questions
-   - Auto-save on each answer
-5. Submit Exam
-6. View Results (optional)
-```
-
-### Teacher Flow
+### Alur Mahasiswa
 
 ```
-1. Login → Teacher Dashboard (Security Monitoring Center)
-2. View Live Activity Feed
-3. Monitor KPI Cards:
-   - Total Students
-   - Active Sessions
-   - Completed Sessions
-   - Violations
-   - Risk Overview
-4. Filter Sessions:
-   - All / Active / Submitted
-   - High Risk / Safe / Warning / Critical
-5. Search Students or Exams
-6. Click Student Card for Details
-7. Review Violation Timeline
+1. Login → Dashboard Mahasiswa
+2. Melihat Ujian Tersedia
+3. Mulai Ujian → Membuat Sesi
+4. Mengerjakan Ujian:
+   - Membaca Soal
+   - Memilih/Menulis Jawaban
+   - Berpindah Antar Soal
+   - Penyimpanan otomatis setiap jawaban
+5. Mengumpulkan Ujian
+6. Melihat Hasil (opsional)
+```
+
+### Alur Guru
+
+```
+1. Login → Dashboard Guru (Security Monitoring Center)
+2. Melihat Live Activity Feed
+3. Memantau KPI Cards:
+   - Total Mahasiswa
+   - Sesi Aktif
+   - Sesi Selesai
+   - Pelanggaran
+   - Ringkasan Risiko
+4. Filter Sesi:
+   - Semua / Aktif / Dikumpulkan
+   - Risiko Tinggi / Aman / Peringatan / Kritis
+5. Mencari Mahasiswa atau Ujian
+6. Klik Kartu Mahasiswa untuk Detail
+7. Meninjau Lini Waktu Pelanggaran
 ```
 
 ---
 
-## 14. Realtime Features
+## 14. Fitur Realtime
 
-The system implements Supabase Realtime subscriptions for live monitoring:
+Sistem menerapkan langganan Supabase Realtime untuk pemantauan langsung:
 
-| Channel | Table | Events | Purpose |
-|---------|-------|--------|---------|
-| `teacher-monitoring` | `cheating_events` | INSERT | Real-time violation alerts |
+| Channel | Tabel | Events | Tujuan |
+|---------|-------|--------|--------|
+| `teacher-monitoring` | `cheating_events` | INSERT | Pemberitahuan pelanggaran realtime |
 
-When a student triggers a violation:
-1. Event is logged to `cheating_events` table
-2. Supabase Realtime pushes the event to all connected teachers
-3. Teacher dashboard updates immediately without refresh
-4. Live activity bar shows new alert
+Ketika mahasiswa memicu pelanggaran:
+1. Event dicatat ke tabel `cheating_events`
+2. Supabase Realtime mendorong event ke seluruh guru yang terhubung
+3. Dashboard guru diperbarui segera tanpa refresh
+4. Live activity bar menampilkan pemberitahuan baru
 
 ---
 
 ## 15. Responsive Design
 
-The application is fully responsive across all breakpoints:
+Aplikasi memiliki tampilan responsif di seluruh breakpoint:
 
-| Breakpoint | Width | Layout |
-|------------|-------|--------|
-| Mobile XS | 320px - 375px | Single column, stacked elements |
-| Mobile | 375px - 768px | Single column, optimized touch targets |
-| Tablet | 768px - 1024px | Two-column grids where appropriate |
-| Desktop | 1024px+ | Full layout with sidebar navigation |
-| Large Desktop | 1440px+ | Expanded content area |
+| Breakpoint | Lebar | Tata Letak |
+|------------|-------|-----------|
+| Mobile XS | 320px - 375px | Kolom tunggal, elemen bertumpuk |
+| Mobile | 375px - 768px | Kolom tunggal, target sentuh optimal |
+| Tablet | 768px - 1024px | Grid dua kolom jika sesuai |
+| Desktop | 1024px+ | Tata letak lengkap dengan navigasi samping |
+| Large Desktop | 1440px+ | Area konten yang diperluas |
 
 ---
 
-## 16. Screenshots
+## 16. Screenshot
 
-### Student Dashboard
+### Dashboard Mahasiswa
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │  🛡 ExamGuard                                    [Avatar ▼] │
 ├─────────────────────────────────────────────────────────────┤
 │                                                             │
-│  Your Exams                                                 │
-│  Focus workspace for your assessments                       │
+│  Ujian Anda                                                 │
+│  Ruang fokus untuk penilaian Anda                           │
 │                                                             │
 │  ┌─────────┐  ┌─────────┐  ┌─────────┐                   │
-│  │ ● Active│  │✓ Complete│  │📚 Total │                   │
+│  │ ● Aktif│  │✓ Selesai │  │📚 Total │                   │
 │  │    1    │  │    2     │  │    5    │                   │
 │  └─────────┘  └─────────┘  └─────────┘                   │
 │                                                             │
-│  Available Exams                                            │
+│  Ujian Tersedia                                             │
 │  ┌─────────────────────────────────────────────────────────┐│
-│  │ 📘  Introduction to Programming          [Start Exam ▶]││
-│  │     Multiple choice • 60 minutes                       ││
+│  │ 📘  Pengantar Pemrograman                  [Mulai Ujian ▶]││
+│  │     Pilihan ganda • 60 menit                            ││
 │  └─────────────────────────────────────────────────────────┘│
 │                                                             │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-### Teacher Dashboard
+### Dashboard Guru
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │  🛡 ExamGuard                                    [Avatar ▼] │
 ├─────────────────────────────────────────────────────────────┤
-│  🔴 LIVE: Tab switch detected - John Doe                    │
+│  🔴 LIVE: Perpindahan tab terdeteksi - John Doe             │
 ├─────────────────────────────────────────────────────────────┤
 │  ┌──────┐ ┌──────┐ ┌──────┐ ┌──────┐ ┌──────┐ ┌─────────┐ │
-│  │ 👥 12│ │ ✓  5 │ │ ✓  7 │ │ ⚠ 8 │ │ 🔴 3 │ │ Safe 5 │ │
-│  │Student│ │Active│ │Done  │ │Viol. │ │Risk  │ │Warn 3  │ │
-│  └──────┘ └──────┘ └──────┘ └──────┘ └──────┘ │Crit 0  │ │
+│  │ 👥 12│ │ ✓  5 │ │ ✓  7 │ │ ⚠ 8 │ │ 🔴 3 │ │ Aman 5 │ │
+│  │Mahasis│ │ Aktif│ │Seles │ │Pelang│ │ Ris. │ │Warn 3  │ │
+│  └──────┘ └──────┘ └──────┘ └──────┘ └──────┘ │Krit 0 │ │
 │                                               └─────────┘ │
-│  [All] [Active] [Submitted] [High Risk] [Safe] [Warning]   │
-│  🔍 Search...                                              │
+│  [Semua] [Aktif] [Selesai] [Ris.Tinggi] [Aman] [Peringatan]│
+│  🔍 Cari...                                               │
 │                                                             │
 │  ┌──────────────────────┐  ┌──────────────────────┐       │
 │  │ 👤 John Doe          │  │ 👤 Jane Smith        │       │
-│  │ 📘 Math Final        │  │ 📘 Math Final        │       │
-│  │ ⚠ 3 violations       │  │ ✓ No violations      │       │
-│  │ Risk: ████░░ 60%      │  │ Risk: ░░░░░ 0%       │       │
-│  │ [View Details]        │  │ [View Details]        │       │
+│  │ 📘 Ujian Matematika  │  │ 📘 Ujian Matematika  │       │
+│  │ ⚠ 3 pelanggaran      │  │ ✓ Tanpa pelanggaran  │       │
+│  │ Risiko: ████░░ 60%   │  │ Risiko: ░░░░░ 0%    │       │
+│  │ [Lihat Detail]       │  │ [Lihat Detail]       │       │
 │  └──────────────────────┘  └──────────────────────┘       │
 │                                                             │
 └─────────────────────────────────────────────────────────────┘
@@ -445,51 +448,38 @@ The application is fully responsive across all breakpoints:
 
 ---
 
-## 17. Future Improvements
+## 17. Pengembangan Selanjutnya
 
-Planned features for future development:
+Fitur yang direncanakan untuk pengembangan selanjutnya:
 
-- **AI Face Detection**: Webcam-based face recognition during exams
-- **Screen Recording Detection**: Monitor for screen recording software
-- **Browser Lockdown**: Fullscreen-only mode enforcement
-- **Voice Detection**: Audio monitoring for suspicious sounds
-- **PDF Export**: Generate printable violation reports
-- **Email Notifications**: Alert teachers via email for critical violations
-- **Exam Timer**: Enhanced countdown with warnings
-- **Question Bank**: Reusable question templates
-- **Analytics Dashboard**: Historical performance trends
-- **Multi-language Support**: i18n for international institutions
-
----
-
-## 18. License
-
-This project is developed for academic purposes.
-
-**License**: Academic Project - Educational Use Only
+- **Deteksi Wajah AI**: Pengenalan wajah berbasis webcam selama ujian
+- **Deteksi Perekaman Layar**: Pemantauan perangkat lunak perekaman layar
+- **Browser Lockdown**: Penerapan mode layar penuh wajib
+- **Deteksi Suara**: Pemantauan audio untuk suara mencurigakan
+- **Ekspor PDF**: Pembuatan laporan pelanggaran yang dapat dicetak
+- **Notifikasi Email**: Pemberitahuan via email untuk pelanggaran kritis
+- **Timer Ujian**: Hitung mundur dengan peringatan
+- **Bank Soal**: Template soal yang dapat digunakan kembali
+- **Dashboard Analitik**: Tren performa historis
+- **Dukungan Multi-bahasa**: Internasionalisasi untuk institusi internasional
 
 ---
 
-## 19. Author
+## 18. Lisensi
 
-| Field | Value |
+Proyek ini dikembangkan untuk keperluan akademis.
+
+**Lisensi**: Proyek Akademis - Hanya untuk Penggunaan Edukatif
+
+---
+
+## 19. Penulis
+
+| Field | Nilai |
 |-------|-------|
-| Project | ExamGuard |
-| Type | Academic Project |
-| Year | 2026 |
-| Purpose | AI-Based Online Examination Integrity Monitoring |
+| Proyek | ExamGuard |
+| Tipe | Proyek Akhir |
+| Tahun | 2026 |
+| Tujuan | Sistem Pemantauan Integritas Ujian Online Berbasis AI |
 
 ---
-
-## Getting Help
-
-If you encounter any issues:
-
-1. Check the `docs/DESIGN.md` for design system documentation
-2. Review `supabase/schema.sql` for database structure
-3. Examine component files in `components/` for implementation details
-4. Check environment variables are properly configured
-
----
-
-Built with ❤️ for academic integrity
