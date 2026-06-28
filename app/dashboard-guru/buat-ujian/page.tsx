@@ -19,7 +19,7 @@ export default async function CreateExamPage() {
     .from('profiles')
     .select('role')
     .eq('id', user.id)
-    .single()
+    .single() as { data: { role: string } | null }
 
   if (profile?.role !== 'teacher') {
     redirect('/dashboard-mahasiswa')

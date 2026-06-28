@@ -2,6 +2,7 @@ import { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { TeacherDashboard } from '@/components/teacher/teacher-dashboard'
+import { calculateExamScore, Question } from '@/lib/utils/grading'
 import type { Database } from '@/types/supabase'
 
 type Profile = Database['public']['Tables']['profiles']['Row']
@@ -24,6 +25,7 @@ type SessionWithDetails = Session & {
   student_email?: string
   exam_description?: string
   duration_minutes?: number
+  score?: number | null
 }
 
 export default async function TeacherDashboardPage() {
@@ -52,7 +54,11 @@ export default async function TeacherDashboardPage() {
         id,
         title,
         description,
-        teacher_id
+        teacher_id,
+        questions(
+          id,
+          correct_answer
+        )
       ),
       profiles:profiles!exam_sessions_student_id_fkey(
         id,
@@ -76,7 +82,7 @@ export default async function TeacherDashboardPage() {
       )
     `)
     .order('started_at', { ascending: false }) as { data: (Session & {
-      exams: Pick<Exam, 'id' | 'title' | 'description' | 'teacher_id'>;
+      exams: Pick<Exam, 'id' | 'title' | 'description' | 'teacher_id'> & { questions: Question[] };
       profiles: Pick<Profile, 'id' | 'name'>;
       cheating_events: CheatingEvent[];
       student_answers: StudentAnswer[];
@@ -93,7 +99,8 @@ export default async function TeacherDashboardPage() {
       exam_title: session.exams?.title || 'Unknown Exam',
       student_name: session.profiles?.name || 'Unknown Student',
       exam_description: session.exams?.description || undefined,
-      duration_minutes: 60
+      duration_minutes: 60,
+      score: session.status === 'submitted' ? calculateExamScore(session.exams?.questions || [], session.student_answers || []) : null
     }))
 
   return (
@@ -104,13 +111,25 @@ export default async function TeacherDashboardPage() {
             <h1 className="text-2xl sm:text-3xl lg:text-[32px] font-semibold tracking-tight text-carbon">Security Monitoring Center</h1>
             <p className="text-sm sm:text-base text-pewter mt-1">Real-time exam integrity surveillance</p>
           </div>
-          <a href="/dashboard-guru/buat-ujian" className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
-              <path d="M5 12h14"></path>
-              <path d="M12 5v14"></path>
-            </svg>
-            Buat Ujian Baru
-          </a>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <a href="/dashboard-guru/manajemen" className="inline-flex items-center justify-center rounded-lg bg-white border border-slate-200 px-5 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-200 focus:ring-offset-2 shadow-sm">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10 9 9 9 8 9"></polyline>
+              </svg>
+              Kelola Ujian
+            </a>
+            <a href="/dashboard-guru/buat-ujian" className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-sm">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
+                <path d="M5 12h14"></path>
+                <path d="M12 5v14"></path>
+              </svg>
+              Buat Ujian Baru
+            </a>
+          </div>
         </div>
         <TeacherDashboard sessions={allSessions} />
       </main>

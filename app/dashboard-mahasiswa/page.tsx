@@ -3,10 +3,11 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { ScientificBackground } from '@/components/ui/scientific-background'
 import { StudentDashboardContent } from '@/components/student/student-dashboard-content'
+import { calculateExamScore, Question, Answer } from '@/lib/utils/grading'
 import type { Database } from '@/types/supabase'
 
 type Profile = Database['public']['Tables']['profiles']['Row']
-type Session = Database['public']['Tables']['exam_sessions']['Row']
+type Session = Database['public']['Tables']['exam_sessions']['Row'] & { score?: number | null }
 type Exam = Database['public']['Tables']['exams']['Row']
 
 export const metadata: Metadata = { title: 'Student Dashboard - ExamGuard' }
@@ -30,11 +31,16 @@ export default async function StudentDashboardPage() {
     .select('*')
     .order('created_at', { ascending: false }) as { data: Exam[] | null }
 
-  // Fetch student's exam sessions
-  const { data: sessions } = await supabase
+  // Fetch student's exam sessions with cheating_events, student_answers, and questions for grading
+  const { data: rawSessions } = await supabase
     .from('exam_sessions')
-    .select('*, cheating_events(*)')
-    .eq('student_id', user.id) as { data: Session[] | null }
+    .select('*, cheating_events(*), student_answers(*), exams(*, questions(*))')
+    .eq('student_id', user.id)
+
+  const sessions = (rawSessions || []).map((session: Record<string, unknown>) => ({
+    ...session,
+    score: session.status === 'submitted' ? calculateExamScore((session.exams as Record<string, unknown>)?.questions as Question[] || [], (session.student_answers as Answer[]) || []) : null
+  })) as Session[]
 
   return (
     <div className="min-h-screen relative">

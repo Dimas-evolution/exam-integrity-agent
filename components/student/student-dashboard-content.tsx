@@ -8,7 +8,7 @@ import { createClient } from '@/lib/supabase/client'
 import { formatDate } from '@/lib/utils/date'
 import type { Database } from '@/types/supabase'
 
-type Session = Database['public']['Tables']['exam_sessions']['Row']
+type Session = Database['public']['Tables']['exam_sessions']['Row'] & { score?: number | null }
 type Exam = Database['public']['Tables']['exams']['Row']
 
 interface Props {
@@ -146,8 +146,15 @@ export function StudentDashboardContent({ exams, sessions }: Props) {
                           <Clock className="w-3 h-3 sm:w-4 sm:h-4" /> In Progress
                         </div>
                       ) : isCompleted ? (
-                        <div className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl bg-surface-2 text-pewter text-xs sm:text-sm font-medium">
-                          Submitted
+                        <div className="flex items-center gap-3">
+                          {session.score !== undefined && session.score !== null && (
+                            <div className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl bg-blue-50 border border-blue-200 text-blue-700 text-xs sm:text-sm font-bold">
+                              Score: {session.score} / 100
+                            </div>
+                          )}
+                          <div className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl bg-surface-2 text-pewter text-xs sm:text-sm font-medium">
+                            Submitted
+                          </div>
                         </div>
                       ) : null}
 

@@ -16,6 +16,7 @@ type SessionWithDetails = Session & {
   profiles: Pick<Profile, 'id' | 'name'>
   cheating_events: CheatingEvent[]
   student_answers: StudentAnswer[]
+  score?: number | null
 }
 
 interface StudentCardProps {
@@ -145,6 +146,13 @@ export function StudentCard({ session }: StudentCardProps) {
             <motion.div className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full" initial={{ width: 0 }} animate={{ width: `${progress}%` }} transition={{ duration: 0.8, ease: 'easeOut' }} />
           </div>
         </div>
+
+        {session.status === 'submitted' && session.score !== undefined && session.score !== null && (
+          <div className="flex items-center justify-between p-3 rounded-xl bg-gradient-to-r from-blue-500/10 to-blue-400/5 border border-blue-500/20">
+            <span className="text-sm font-medium text-blue-400">Final Score</span>
+            <span className="text-xl font-bold text-white">{session.score} / 100</span>
+          </div>
+        )}
 
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-3">

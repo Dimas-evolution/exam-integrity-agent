@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/client'
 import { Plus, Trash2, Save, ArrowLeft, Loader2 } from 'lucide-react'
 
 type Question = {
+  id?: string
   question_text: string
   question_order: number
   question_type: 'multiple_choice' | 'essay'
@@ -13,25 +14,37 @@ type Question = {
   correct_answer: string
 }
 
-export function CreateExamForm({ teacherId }: { teacherId: string }) {
+type ExamInitialData = {
+  id: string
+  title: string
+  description: string
+  duration: number
+  questions: Question[]
+}
+
+export function CreateExamForm({ teacherId, initialData }: { teacherId: string, initialData?: ExamInitialData }) {
   const router = useRouter()
   const supabase = createClient()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const [title, setTitle] = useState('')
-  const [description, setDescription] = useState('')
-  const [duration, setDuration] = useState(60)
+  const [title, setTitle] = useState(initialData?.title || '')
+  const [description, setDescription] = useState(initialData?.description || '')
+  const [duration, setDuration] = useState(initialData?.duration || 60)
 
-  const [questions, setQuestions] = useState<Question[]>([
-    {
-      question_text: '',
-      question_order: 1,
-      question_type: 'multiple_choice',
-      options: ['', '', '', ''],
-      correct_answer: '0',
-    },
-  ])
+  const [questions, setQuestions] = useState<Question[]>(
+    initialData?.questions || [
+      {
+        question_text: '',
+        question_order: 1,
+        question_type: 'multiple_choice',
+        options: ['', '', '', ''],
+        correct_answer: '0',
+      },
+    ]
+  )
+  
+  const [deletedQuestionIds, setDeletedQuestionIds] = useState<string[]>([])
 
   const addQuestion = () => {
     setQuestions([
@@ -48,6 +61,10 @@ export function CreateExamForm({ teacherId }: { teacherId: string }) {
 
   const removeQuestion = (index: number) => {
     if (questions.length === 1) return
+    const removedQ = questions[index]
+    if (removedQ.id) {
+      setDeletedQuestionIds([...deletedQuestionIds, removedQ.id])
+    }
     const newQuestions = questions.filter((_, i) => i !== index)
     // Update order
     newQuestions.forEach((q, i) => {
@@ -56,7 +73,7 @@ export function CreateExamForm({ teacherId }: { teacherId: string }) {
     setQuestions(newQuestions)
   }
 
-  const updateQuestion = (index: number, field: keyof Question, value: any) => {
+  const updateQuestion = (index: number, field: keyof Question, value: string) => {
     const newQuestions = [...questions]
     newQuestions[index] = { ...newQuestions[index], [field]: value }
     setQuestions(newQuestions)
@@ -85,23 +102,47 @@ export function CreateExamForm({ teacherId }: { teacherId: string }) {
         }
       }
 
-      // 2. Insert Ujian
-      const { data: examData, error: examError } = await supabase
-        .from('exams')
-        .insert({
-          title,
-          description,
-          duration_minutes: duration,
-          teacher_id: teacherId,
-        })
-        .select()
-        .single()
+      // 2. Insert or Update Ujian
+      let examId = initialData?.id
+      if (examId) {
+        const { error: examError } = await supabase
+          .from('exams')
+          .update({
+            title,
+            description,
+            duration_minutes: duration,
+          })
+          .eq('id', examId)
+        if (examError) throw examError
+      } else {
+        const { data: examData, error: examError } = await supabase
+          .from('exams')
+          .insert({
+            title,
+            description,
+            duration_minutes: duration,
+            teacher_id: teacherId,
+          })
+          .select()
+          .single()
 
-      if (examError) throw examError
+        if (examError) throw examError
+        examId = examData.id
+      }
 
-      // 3. Insert Pertanyaan
-      const questionsToInsert = questions.map((q) => ({
-        exam_id: examData.id,
+      // 3. Delete removed questions
+      if (deletedQuestionIds.length > 0) {
+        const { error: deleteError } = await supabase
+          .from('questions')
+          .delete()
+          .in('id', deletedQuestionIds)
+        if (deleteError) throw deleteError
+      }
+
+      // 4. Upsert Pertanyaan
+      const questionsToUpsert = questions.map((q) => ({
+        ...(q.id ? { id: q.id } : {}),
+        exam_id: examId,
         question_text: q.question_text,
         question_order: q.question_order,
         question_type: q.question_type,
@@ -109,18 +150,20 @@ export function CreateExamForm({ teacherId }: { teacherId: string }) {
         // correct_answer in DB is text. If multiple choice, we store the actual option text as correct answer
         // to make it easier for auto-grading later.
         correct_answer:
-          q.question_type === 'multiple_choice' ? q.options[parseInt(q.correct_answer)] : q.correct_answer,
+          q.question_type === 'multiple_choice' ? q.options[parseInt(q.correct_answer)] : null,
       }))
 
-      const { error: questionsError } = await supabase.from('questions').insert(questionsToInsert)
+      const { error: questionsError } = await supabase.from('questions').upsert(questionsToUpsert)
 
       if (questionsError) throw questionsError
 
       // Berhasil
-      router.push('/dashboard-guru')
+      router.push('/dashboard-guru/manajemen')
       router.refresh()
-    } catch (err: any) {
-      setError(err.message || 'Terjadi kesalahan saat menyimpan ujian.')
+    } catch (err: unknown) {
+      console.error('Error saving exam:', err)
+      const message = err instanceof Error ? err.message : 'Unknown error'
+      alert('Gagal membuat ujian. Silakan coba lagi.\n' + message)
     } finally {
       setIsSubmitting(false)
     }
@@ -191,16 +234,26 @@ export function CreateExamForm({ teacherId }: { teacherId: string }) {
             <div key={qIndex} className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm relative">
               <div className="flex justify-between items-start mb-4">
                 <h3 className="text-lg font-medium text-carbon">Soal Nomor {q.question_order}</h3>
-                {questions.length > 1 && (
-                  <button
-                    type="button"
-                    onClick={() => removeQuestion(qIndex)}
-                    className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                    title="Hapus Soal"
+                <div className="flex items-center gap-3">
+                  <select
+                    value={q.question_type}
+                    onChange={(e) => updateQuestion(qIndex, 'question_type', e.target.value)}
+                    className="text-sm px-3 py-1.5 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                   >
-                    <Trash2 className="w-5 h-5" />
-                  </button>
-                )}
+                    <option value="multiple_choice">Pilihan Ganda</option>
+                    <option value="essay">Esai</option>
+                  </select>
+                  {questions.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => removeQuestion(qIndex)}
+                      className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                      title="Hapus Soal"
+                    >
+                      <Trash2 className="w-5 h-5" />
+                    </button>
+                  )}
+                </div>
               </div>
 
               <div className="space-y-4">
@@ -214,34 +267,36 @@ export function CreateExamForm({ teacherId }: { teacherId: string }) {
                   />
                 </div>
 
-                <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
-                  <p className="text-sm font-medium text-carbon mb-3">Pilihan Jawaban</p>
-                  <div className="space-y-3">
-                    {['A', 'B', 'C', 'D'].map((letter, optIndex) => (
-                      <div key={optIndex} className="flex items-center gap-3">
-                        <input
-                          type="radio"
-                          name={`correct_${qIndex}`}
-                          checked={q.correct_answer === optIndex.toString()}
-                          onChange={() => updateQuestion(qIndex, 'correct_answer', optIndex.toString())}
-                          className="w-4 h-4 text-blue-600 focus:ring-blue-500 border-gray-300 cursor-pointer"
-                        />
-                        <span className="font-medium text-carbon w-4">{letter}.</span>
-                        <input
-                          type="text"
-                          value={q.options[optIndex]}
-                          onChange={(e) => updateOption(qIndex, optIndex, e.target.value)}
-                          placeholder={`Pilihan ${letter}`}
-                          className="flex-1 px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm"
-                          required
-                        />
-                      </div>
-                    ))}
+                {q.question_type === 'multiple_choice' && (
+                  <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
+                    <p className="text-sm font-medium text-carbon mb-3">Pilihan Jawaban</p>
+                    <div className="space-y-3">
+                      {['A', 'B', 'C', 'D'].map((letter, optIndex) => (
+                        <div key={optIndex} className="flex items-center gap-3">
+                          <input
+                            type="radio"
+                            name={`correct_${qIndex}`}
+                            checked={q.correct_answer === optIndex.toString()}
+                            onChange={() => updateQuestion(qIndex, 'correct_answer', optIndex.toString())}
+                            className="w-4 h-4 text-blue-600 focus:ring-blue-500 border-gray-300 cursor-pointer"
+                          />
+                          <span className="font-medium text-carbon w-4">{letter}.</span>
+                          <input
+                            type="text"
+                            value={q.options[optIndex]}
+                            onChange={(e) => updateOption(qIndex, optIndex, e.target.value)}
+                            placeholder={`Pilihan ${letter}`}
+                            className="flex-1 px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm"
+                            required
+                          />
+                        </div>
+                      ))}
+                    </div>
+                    <p className="text-xs text-pewter mt-3 italic">
+                      * Pilih tombol radio (lingkaran) di sebelah kiri untuk menandai Kunci Jawaban yang benar.
+                    </p>
                   </div>
-                  <p className="text-xs text-pewter mt-3 italic">
-                    * Pilih tombol radio (lingkaran) di sebelah kiri untuk menandai Kunci Jawaban yang benar.
-                  </p>
-                </div>
+                )}
               </div>
             </div>
           ))}

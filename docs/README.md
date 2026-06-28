@@ -449,7 +449,16 @@ Aplikasi memiliki tampilan responsif di seluruh breakpoint:
 
 ---
 
-## 17. Pengembangan Selanjutnya
+## 17. Pembaruan Fitur Terbaru (Juni 2026)
+
+- **Manajemen Ujian Lanjutan:** Guru kini dapat membuat ujian campuran (Soal Esai & Pilihan Ganda) dalam satu sesi yang sama. Sistem penilaian otomatis disesuaikan agar hanya menilai bagian pilihan ganda.
+- **Mode Edit Ujian:** Soal-soal yang telah dibuat dapat diedit kembali, ditambahkan, atau dikurangi. Penyimpanan menggunakan logika UPSERT agar data tersinkronisasi tanpa duplikasi.
+- **Pembaruan Profil & Keamanan:** UI/UX halaman Pengaturan (_Settings_) dirombak agar lebih elegan tanpa elemen _dummy_. Profil memiliki sistem navigasi _Tab_ (Informasi Pribadi & Keamanan).
+- **Ganti Password Mandiri:** Pengguna kini bisa mengubah kata sandi mereka secara mandiri melalui tab Keamanan di pengaturan profil, yang terintegrasi langsung dengan _Supabase Auth_.
+
+---
+
+## 18. Pengembangan Selanjutnya
 
 Fitur yang direncanakan untuk pengembangan selanjutnya:
 

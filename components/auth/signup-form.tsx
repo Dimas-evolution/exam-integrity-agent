@@ -39,7 +39,13 @@ export function SignupForm() {
       }
 
       if (data.user) {
-        // Redirect based on role
+        // If no session, it means email confirmation is required
+        if (!data.session) {
+          setError('Akun berhasil dibuat! Silakan cek kotak masuk Email Anda untuk verifikasi sebelum bisa login.')
+          return
+        }
+
+        // Redirect based on role if session exists (auto login)
         const redirectUrl = role === 'teacher' ? '/dashboard-guru' : '/dashboard-mahasiswa'
         router.push(redirectUrl)
       }
@@ -53,7 +59,7 @@ export function SignupForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       {error && (
-        <div className="text-[#D9534F] text-[14px] py-2">
+        <div className={`text-[14px] py-2 px-3 rounded ${error.includes('berhasil') ? 'bg-emerald-50 text-emerald-600 border border-emerald-200' : 'text-[#D9534F]'}`}>
           {error}
         </div>
       )}

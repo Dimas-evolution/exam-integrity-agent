@@ -7,6 +7,17 @@ import { Database } from '@/types/supabase'
 import { Button } from '@/components/ui/button'
 import { WarningModal } from './warning-modal'
 import { useIntegrityAgent } from '@/hooks/use-integrity-agent'
+import { Clock } from 'lucide-react'
+
+// Fisher-Yates Shuffle
+function shuffleArray<T>(array: T[]): T[] {
+  const newArr = [...array]
+  for (let i = newArr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [newArr[i], newArr[j]] = [newArr[j], newArr[i]]
+  }
+  return newArr
+}
 
 type Exam = Database['public']['Tables']['exams']['Row']
 type Session = Database['public']['Tables']['exam_sessions']['Row']
@@ -28,10 +39,12 @@ export function ExamSession({ exam, session }: { exam: Exam, session: Session })
   const [isSubmitting, setIsSubmitting] = React.useState(false)
   const [isLoading, setIsLoading] = React.useState(true)
   
-  // Warning modal state
   const [showWarning, setShowWarning] = React.useState(false)
   const [warningDuration, setWarningDuration] = React.useState(0)
   const [warningQuestion, setWarningQuestion] = React.useState(1)
+
+  // Timer state
+  const [timeLeft, setTimeLeft] = React.useState<number | null>(null)
   
   // Load questions and existing answers
   React.useEffect(() => {
@@ -45,7 +58,26 @@ export function ExamSession({ exam, session }: { exam: Exam, session: Session })
           .order('question_order', { ascending: true })
         
         if (questionsError) throw questionsError
-        setQuestions(questionsData || [])
+        
+        // Shuffle questions and their options
+        let shuffledQuestions = shuffleArray(questionsData || [])
+        shuffledQuestions = shuffledQuestions.map(q => {
+          if (q.question_type === 'multiple_choice' && q.options) {
+            const optsArray = q.options as Record<string, unknown>[]
+            // If it's objects with {text}, extract text. If it's strings, keep strings.
+            let stringOpts = optsArray.map(opt => typeof opt === 'string' ? opt : String(opt.text))
+            // Shuffle the options
+            stringOpts = shuffleArray(stringOpts)
+            // Reassign to QuestionOption objects with new A,B,C,D letters
+            q.options = stringOpts.map((text, i) => ({
+              letter: String.fromCharCode(65 + i),
+              text: text
+            })) as unknown as string[]
+          }
+          return q
+        })
+        
+        setQuestions(shuffledQuestions)
         
         // Fetch existing answers for this session
         const { data: answersData, error: answersError } = await supabase
@@ -73,6 +105,65 @@ export function ExamSession({ exam, session }: { exam: Exam, session: Session })
     
     loadExamContent()
   }, [exam.id, session.id, supabase])
+
+  const handleSubmit = async (isForced: boolean | React.MouseEvent = false) => {
+    if (isForced !== true) {
+      if (!window.confirm('Are you sure you want to submit? You cannot return to the exam once submitted.')) {
+        return
+      }
+    }
+    
+    setIsSubmitting(true)
+    try {
+      const { error } = await supabase
+        .from('exam_sessions')
+        .update({ status: 'submitted', completed_at: new Date().toISOString() } as never)
+        .eq('id', session.id)
+      
+      if (error) throw error
+      
+      router.push('/dashboard-mahasiswa')
+      router.refresh()
+    } catch (err) {
+      console.error(err)
+      alert('Failed to submit exam')
+      setIsSubmitting(false)
+    }
+  }
+
+  // Timer logic based on server started_at
+  React.useEffect(() => {
+    if (!session.started_at || !exam.duration_minutes || isLoading) return;
+
+    const startTime = new Date(session.started_at).getTime();
+    const durationMs = exam.duration_minutes * 60 * 1000;
+    const endTime = startTime + durationMs;
+
+    const updateTimer = () => {
+      const now = new Date().getTime();
+      const remaining = Math.max(0, endTime - now);
+      setTimeLeft(remaining);
+
+      if (remaining <= 0 && !isSubmitting) {
+        handleSubmit(true); // Force submit
+      }
+    };
+
+    updateTimer(); // Initial call
+    const interval = setInterval(updateTimer, 1000);
+    return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session.started_at, exam.duration_minutes, isLoading, isSubmitting]);
+
+  const formatTime = (ms: number | null) => {
+    if (ms === null) return '--:--:--';
+    const totalSeconds = Math.floor(ms / 1000);
+    const h = Math.floor(totalSeconds / 3600);
+    const m = Math.floor((totalSeconds % 3600) / 60);
+    const s = totalSeconds % 60;
+    if (h > 0) return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  };
   
   // Update session's current question index when it changes
   React.useEffect(() => {
@@ -144,30 +235,6 @@ export function ExamSession({ exam, session }: { exam: Exam, session: Session })
     }
   }
   
-  // Submit exam
-  const handleSubmit = async () => {
-    if (!window.confirm('Are you sure you want to submit? You cannot return to the exam once submitted.')) {
-      return
-    }
-    
-    setIsSubmitting(true)
-    try {
-      const { error } = await supabase
-        .from('exam_sessions')
-        .update({ status: 'submitted', completed_at: new Date().toISOString() } as never)
-        .eq('id', session.id)
-      
-      if (error) throw error
-      
-      router.push('/dashboard-mahasiswa')
-      router.refresh()
-    } catch (err) {
-      console.error(err)
-      alert('Failed to submit exam')
-      setIsSubmitting(false)
-    }
-  }
-  
   // Loading state
   if (isLoading) {
     return (
@@ -203,11 +270,19 @@ export function ExamSession({ exam, session }: { exam: Exam, session: Session })
       />
       
       <div className={`flex-1 flex flex-col max-w-[800px] mx-auto w-full ${showWarning ? 'pointer-events-none select-none' : ''}`}>
-        {/* Header */}
-        <div className="mb-6">
-          <h1 className="text-[34px] font-medium text-carbon tracking-tight">{exam.title}</h1>
-          {exam.description && (
-            <p className="text-[14px] text-graphite mt-2">{exam.description}</p>
+        {/* Header with Timer */}
+        <div className="mb-6 flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+          <div>
+            <h1 className="text-[28px] sm:text-[34px] font-medium text-carbon tracking-tight leading-tight">{exam.title}</h1>
+            {exam.description && (
+              <p className="text-[14px] text-graphite mt-2">{exam.description}</p>
+            )}
+          </div>
+          {timeLeft !== null && (
+            <div className={`flex items-center gap-2 px-4 py-2 rounded-[4px] border border-cloud font-medium text-[16px] flex-shrink-0 ${timeLeft < 300000 ? 'bg-red-50 text-red-600 border-red-200 animate-pulse' : 'bg-white text-carbon'}`}>
+              <Clock className="w-5 h-5" />
+              <span className="font-mono">{formatTime(timeLeft)}</span>
+            </div>
           )}
         </div>
         
@@ -281,9 +356,9 @@ export function ExamSession({ exam, session }: { exam: Exam, session: Session })
                   <input
                     type="radio"
                     name={`question-${currentQuestion.id}`}
-                    value={option.letter}
-                    checked={currentAnswer === option.letter}
-                    onChange={() => handleAnswerChange(currentQuestion.id, option.letter)}
+                    value={option.text}
+                    checked={currentAnswer === option.text}
+                    onChange={() => handleAnswerChange(currentQuestion.id, option.text)}
                     disabled={showWarning}
                     className="w-4 h-4 text-[#3E6AE1] mr-3"
                   />

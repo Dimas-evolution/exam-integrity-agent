@@ -14,18 +14,24 @@ export interface Database {
           id: string
           role: 'teacher' | 'student'
           name: string
+          identity_number: string | null
+          institution: string | null
           created_at: string
         }
         Insert: {
           id: string
           role: 'teacher' | 'student'
           name: string
+          identity_number?: string | null
+          institution?: string | null
           created_at?: string
         }
         Update: {
           id?: string
           role?: 'teacher' | 'student'
           name?: string
+          identity_number?: string | null
+          institution?: string | null
           created_at?: string
         }
       }
@@ -35,6 +41,7 @@ export interface Database {
           title: string
           description: string | null
           teacher_id: string
+          duration_minutes?: number
           created_at: string
         }
         Insert: {
@@ -42,6 +49,7 @@ export interface Database {
           title: string
           description?: string | null
           teacher_id: string
+          duration_minutes?: number
           created_at?: string
         }
         Update: {
@@ -49,6 +57,7 @@ export interface Database {
           title?: string
           description?: string | null
           teacher_id?: string
+          duration_minutes?: number
           created_at?: string
         }
       }
