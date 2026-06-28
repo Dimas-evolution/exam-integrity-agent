@@ -44,8 +44,6 @@ export default async function ProfilePage() {
             name: profile.name,
             email: user.email || '',
             role: profile.role,
-            identity_number: profile.identity_number,
-            institution: profile.institution,
           }}
         />
       </div>
