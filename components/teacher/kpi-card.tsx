@@ -16,39 +16,39 @@ interface KpiCardProps {
 
 const colorSchemes = {
   green: {
-    bg: 'from-emerald-500/20 to-emerald-600/10',
-    border: 'border-emerald-500/30 hover:border-emerald-400/50',
-    icon: 'bg-emerald-500/20 text-emerald-400',
-    glow: 'shadow-emerald-500/20',
-    value: 'text-emerald-400',
+    bg: 'from-emerald-500/10 to-emerald-600/5',
+    border: 'border-emerald-200 hover:border-emerald-300',
+    icon: 'bg-emerald-100 text-emerald-600',
+    glow: 'shadow-emerald-500/10',
+    value: 'text-emerald-600',
   },
   amber: {
-    bg: 'from-amber-500/20 to-amber-600/10',
-    border: 'border-amber-500/30 hover:border-amber-400/50',
-    icon: 'bg-amber-500/20 text-amber-400',
-    glow: 'shadow-amber-500/20',
-    value: 'text-amber-400',
+    bg: 'from-amber-500/10 to-amber-600/5',
+    border: 'border-amber-200 hover:border-amber-300',
+    icon: 'bg-amber-100 text-amber-600',
+    glow: 'shadow-amber-500/10',
+    value: 'text-amber-600',
   },
   red: {
-    bg: 'from-red-500/20 to-red-600/10',
-    border: 'border-red-500/30 hover:border-red-400/50',
-    icon: 'bg-red-500/20 text-red-400',
-    glow: 'shadow-red-500/20',
-    value: 'text-red-400',
+    bg: 'from-red-500/10 to-red-600/5',
+    border: 'border-red-200 hover:border-red-300',
+    icon: 'bg-red-100 text-red-600',
+    glow: 'shadow-red-500/10',
+    value: 'text-red-600',
   },
   blue: {
-    bg: 'from-blue-500/20 to-blue-600/10',
-    border: 'border-blue-500/30 hover:border-blue-400/50',
-    icon: 'bg-blue-500/20 text-blue-400',
-    glow: 'shadow-blue-500/20',
-    value: 'text-blue-400',
+    bg: 'from-blue-500/10 to-blue-600/5',
+    border: 'border-blue-200 hover:border-blue-300',
+    icon: 'bg-blue-100 text-blue-600',
+    glow: 'shadow-blue-500/10',
+    value: 'text-blue-600',
   },
   purple: {
-    bg: 'from-purple-500/20 to-purple-600/10',
-    border: 'border-purple-500/30 hover:border-purple-400/50',
-    icon: 'bg-purple-500/20 text-purple-400',
-    glow: 'shadow-purple-500/20',
-    value: 'text-purple-400',
+    bg: 'from-purple-500/10 to-purple-600/5',
+    border: 'border-purple-200 hover:border-purple-300',
+    icon: 'bg-purple-100 text-purple-600',
+    glow: 'shadow-purple-500/10',
+    value: 'text-purple-600',
   },
 }
 
@@ -93,7 +93,7 @@ export function KpiCard({ title, value, icon, color, subtitle, trend, delay = 0 
       <div className="relative z-10">
         <div className="flex items-start justify-between">
           <div>
-            <p className="text-xs font-medium uppercase tracking-wider text-white/60">{title}</p>
+            <p className="text-xs font-medium uppercase tracking-wider text-slate-600">{title}</p>
             <div className="flex items-baseline gap-2 mt-2">
               <motion.span 
                 className={cn('text-4xl font-bold tabular-nums', scheme.value)}
@@ -115,14 +115,14 @@ export function KpiCard({ title, value, icon, color, subtitle, trend, delay = 0 
               {trend && (
                 <span className={cn(
                   'text-xs font-medium',
-                  trend === 'up' ? 'text-emerald-400' : trend === 'down' ? 'text-red-400' : 'text-white/40'
+                  trend === 'up' ? 'text-emerald-500' : trend === 'down' ? 'text-red-500' : 'text-slate-400'
                 )}>
                   {trend === 'up' ? '↑' : trend === 'down' ? '↓' : '→'}
                 </span>
               )}
             </div>
             {subtitle && (
-              <p className="text-xs text-white/40 mt-1">{subtitle}</p>
+              <p className="text-xs text-slate-500 mt-1">{subtitle}</p>
             )}
           </div>
           <motion.div 

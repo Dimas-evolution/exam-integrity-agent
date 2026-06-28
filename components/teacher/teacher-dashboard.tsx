@@ -125,26 +125,26 @@ export function TeacherDashboard({ sessions: initialSessions }: TeacherDashboard
         <KpiCard title="Completed" value={kpis.completedSessions} icon={<svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>} color="purple" delay={2} />
         <KpiCard title="Violations" value={kpis.totalViolations} icon={<svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>} color="red" subtitle="Total today" delay={3} />
         <KpiCard title="High Risk" value={kpis.highRiskStudents} icon={<svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>} color="amber" delay={4} />
-        <div className="rounded-2xl p-4 bg-gradient-to-br from-white/5 to-white/10 border border-white/10 backdrop-blur-xl">
-          <p className="text-[10px] uppercase tracking-wider text-white/40 mb-3">Risk Overview</p>
+        <div className="rounded-2xl p-4 bg-slate-50 border border-slate-200 shadow-sm">
+          <p className="text-[10px] uppercase tracking-wider text-slate-500 mb-3 font-semibold">Risk Overview</p>
           <div className="flex gap-2">
-            <div className="flex-1 text-center"><span className="text-lg font-bold text-emerald-400">{kpis.safeCount}</span><p className="text-[10px] text-emerald-400/60">Safe</p></div>
-            <div className="flex-1 text-center"><span className="text-lg font-bold text-amber-400">{kpis.warningCount}</span><p className="text-[10px] text-amber-400/60">Warn</p></div>
-            <div className="flex-1 text-center"><span className="text-lg font-bold text-red-400">{kpis.criticalCount}</span><p className="text-[10px] text-red-400/60">Crit</p></div>
+            <div className="flex-1 text-center"><span className="text-lg font-bold text-emerald-500">{kpis.safeCount}</span><p className="text-[10px] text-emerald-600">Safe</p></div>
+            <div className="flex-1 text-center"><span className="text-lg font-bold text-amber-500">{kpis.warningCount}</span><p className="text-[10px] text-amber-600">Warn</p></div>
+            <div className="flex-1 text-center"><span className="text-lg font-bold text-red-500">{kpis.criticalCount}</span><p className="text-[10px] text-red-600">Crit</p></div>
           </div>
         </div>
       </div>
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-        <div className="flex flex-wrap gap-1 p-1 bg-white/5 rounded-xl border border-white/10">
+        <div className="flex flex-wrap gap-1 p-1 bg-slate-100 rounded-xl border border-slate-200">
           {(['all', 'active', 'submitted', 'high_risk', 'safe', 'warning', 'critical'] as FilterType[]).map((f) => (
-            <button key={f} onClick={() => setFilter(f)} className={cn('px-3 py-1.5 rounded-lg text-xs font-medium transition-all', filter === f ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'text-white/50 hover:text-white/80')}>
+            <button key={f} onClick={() => setFilter(f)} className={cn('px-3 py-1.5 rounded-lg text-xs font-medium transition-all', filter === f ? 'bg-white text-slate-900 border border-slate-200 shadow-sm' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-200/50')}>
               {f.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())} <span className="ml-1 text-[10px] opacity-60">({filterCounts[f]})</span>
             </button>
           ))}
         </div>
         <div className="relative min-w-[150px] sm:min-w-[200px]">
-          <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-          <input type="text" placeholder="Search..." value={search} onChange={(e) => setSearch(e.target.value)} className="w-full pl-9 pr-4 py-2 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-white/40 focus:outline-none focus:border-emerald-500/50" />
+          <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+          <input type="text" placeholder="Search..." value={search} onChange={(e) => setSearch(e.target.value)} className="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 shadow-sm" />
         </div>
       </div>
       <div className="grid gap-4 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
