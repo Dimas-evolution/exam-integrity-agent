@@ -2,6 +2,7 @@
 
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import type { Database } from '@/types/supabase'
 
@@ -241,15 +242,15 @@ export function StudentCard({ session }: StudentCardProps) {
           >
             <div className="p-5 space-y-4 bg-slate-900/50">
               <div className="flex gap-2">
-                <button onClick={() => alert("Fitur melihat jawaban mahasiswa sedang dalam tahap pengembangan!")} className="flex-1 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium transition-colors">
+                <Link href={`/dashboard-guru/student-session/${session.id}?tab=answers`} className="flex-1 text-center px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium transition-colors">
                   View Answers
-                </button>
-                <button onClick={() => alert("Fitur garis waktu ujian sedang dalam tahap pengembangan!")} className="flex-1 px-4 py-2 rounded-lg bg-slate-700 hover:bg-slate-600 text-white text-sm font-medium transition-colors">
+                </Link>
+                <Link href={`/dashboard-guru/student-session/${session.id}?tab=timeline`} className="flex-1 text-center px-4 py-2 rounded-lg bg-slate-700 hover:bg-slate-600 text-white text-sm font-medium transition-colors">
                   View Timeline
-                </button>
-                <button onClick={() => alert("Fitur unduh laporan PDF belum tersedia saat ini.")} className="flex-1 px-4 py-2 rounded-lg bg-slate-700 hover:bg-slate-600 text-white text-sm font-medium transition-colors">
+                </Link>
+                <Link href={`/dashboard-guru/student-session/${session.id}?tab=answers`} className="flex-1 text-center px-4 py-2 rounded-lg bg-slate-700 hover:bg-slate-600 text-white text-sm font-medium transition-colors">
                   Download Report
-                </button>
+                </Link>
               </div>
             </div>
           </motion.div>
