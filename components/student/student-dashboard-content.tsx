@@ -168,14 +168,14 @@ export function StudentDashboardContent({ exams, sessions }: Props) {
                           Continue <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4" />
                         </motion.a>
                       ) : isCompleted ? (
-                        <motion.a
-                          href={`/dashboard-mahasiswa/exam/${exam.id}`}
+                        <motion.button
+                          onClick={() => alert("Fitur melihat detail hasil ujian sedang dalam pengembangan (Coming Soon)!")}
                           whileHover={{ scale: 1.02 }}
                           whileTap={{ scale: 0.98 }}
                           className="flex items-center gap-1.5 sm:gap-2 px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl bg-surface text-carbon text-xs sm:text-sm font-medium border border-cloud hover:bg-surface-2 transition-all whitespace-nowrap"
                         >
                           View <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4" />
-                        </motion.a>
+                        </motion.button>
                       ) : (
                         <motion.button
                           onClick={() => startExam(exam.id)}
