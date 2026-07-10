@@ -8,6 +8,20 @@ Sistem informasi ujian online (CBT) yang dilengkapi dengan fitur integritas untu
 
 ---
 
+## 🔑 Akun Pengujian (Testing Credentials)
+Untuk menguji fungsionalitas aplikasi, silakan gunakan akun berikut:
+
+**1. Akun Guru / Dosen**
+- **Email:** teacher@test.com
+- **Password:** password123
+
+**2. Akun Mahasiswa**
+- **Email:** student@test.com
+- **Password:** password123
+
+*(Catatan: Akun ini adalah akun demo bawaan sistem untuk keperluan pengujian)*
+
+---
 ## 🌊 Flow Aplikasi (Alur Kerja)
 
 1. **Autentikasi (Login/Register)**
